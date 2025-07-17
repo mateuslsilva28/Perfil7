@@ -4,8 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Carta - Perfil 7 em JS</title>
+
   <!-- Font Awesome CDN para ícones -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+
   <style>
     * {
       box-sizing: border-box;
@@ -21,7 +23,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 20px;
+      padding: 16px;
       transition: background-color 0.3s ease, color 0.3s ease;
     }
     .dark-mode {
@@ -30,50 +32,47 @@
     }
     .container {
       width: 100%;
-      max-width: 400px;
+      max-width: 500px;
     }
     .card, .informativo {
       border: 1px solid #999;
-      border-radius: 10px;
+      border-radius: 12px;
       background-color: white;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-      padding: 12px 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      padding: 16px;
+      margin-bottom: 20px;
       transition: all 0.3s ease;
     }
-    .dark-mode .card,
-    .dark-mode .informativo {
+    .dark-mode .card, .dark-mode .informativo {
       background-color: #1e1e1e;
       border-color: #666;
     }
     .informativo {
-      margin-bottom: 15px;
+      font-size: 16px;
+      line-height: 1.4;
     }
     .header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 8px;
+      margin-bottom: 12px;
       flex-wrap: wrap;
     }
     .type-text {
       font-weight: bold;
-      font-size: 11px;
+      font-size: 16px;
       flex-grow: 1;
-      padding-right: 6px;
-      transition: all 0.3s ease;
+      padding-right: 8px;
     }
     .character-banner {
       background-color: #000;
       color: #fff;
       font-weight: bold;
-      font-size: 10px;
+      font-size: 14px;
       text-transform: uppercase;
-      padding: 2px 6px;
-      border-radius: 4px;
-      text-align: center;
-      margin-top: 4px;
-      flex-shrink: 0;
-      transition: all 0.3s ease;
+      padding: 4px 8px;
+      border-radius: 6px;
+      margin-top: 6px;
     }
     .dark-mode .character-banner {
       background-color: #f1f1f1;
@@ -83,17 +82,15 @@
       list-style-position: inside;
       margin: 0;
       padding: 0;
-      font-size: 9px;
+      font-size: 15px;
       overflow-y: auto;
-      max-height: 300px;
+      max-height: 320px;
       scroll-snap-type: y mandatory;
     }
     li {
-      padding: 2px 4px;
-      white-space: normal;
+      padding: 6px 8px;
       word-wrap: break-word;
       scroll-snap-align: start;
-      transition: background-color 0.3s ease;
     }
     li:nth-child(odd) {
       background-color: #f2f2f2;
@@ -108,22 +105,27 @@
       background-color: #1a1a1a;
     }
     #btnGerar {
-      margin-bottom: 20px;
-      padding: 8px 12px;
-      font-size: 14px;
+      padding: 12px 16px;
+      font-size: 16px;
+      font-weight: bold;
       cursor: pointer;
       width: 100%;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      margin-bottom: 20px;
       transition: background-color 0.3s ease;
     }
     #btnGerar:hover {
-      background-color: #ccc;
+      background-color: #0056b3;
     }
 
     .theme-toggle {
       position: fixed;
       top: 12px;
       right: 12px;
-      font-size: 22px;
+      font-size: 24px;
       cursor: pointer;
       z-index: 999;
       background: transparent;
@@ -132,11 +134,12 @@
       color: inherit;
     }
 
-    /* Responsividade */
-    @media (max-width: 360px) {
-      .type-text { font-size: 10px; }
-      .character-banner { font-size: 9px; }
-      ol { font-size: 8px; }
+    /* Responsividade para telas menores */
+    @media (max-width: 480px) {
+      .type-text { font-size: 15px; }
+      .character-banner { font-size: 13px; }
+      ol { font-size: 14px; }
+      .informativo { font-size: 15px; }
     }
   </style>
 </head>
@@ -150,10 +153,14 @@
 <div class="container">
   <div class="informativo">
     <div class="header">
-      <div class="type-text">Neste site temos <span id="qtd"></span> cartas de Perfil 7 sem repetição</div>
+      <div class="type-text">
+        Neste site temos <span id="qtd"></span> cartas de Perfil 7 sem repetição
+      </div>
     </div>
   </div>
+
   <button id="btnGerar">Gerar dica aleatória</button>
+
   <div class="card" id="card">
     <div class="header">
       <div class="type-text" id="typeText">Diga aos jogadores que sou <span id="prefixo"></span> <strong></strong></div>
@@ -180,6 +187,7 @@
 
 </body>
 </html>
+
 
 
 
@@ -4480,60 +4488,57 @@
             }
     ];
 
-// Função para gerar índice aleatório sem repetição na sessão
-function getRandomUnusedIndex(max) {
-    let usados = sessionStorage.getItem('indicesUsados');
-    usados = usados ? JSON.parse(usados) : [];
+    // Função para gerar índice aleatório sem repetição na sessão
+    function getRandomUnusedIndex(max) {
+        let usados = sessionStorage.getItem('indicesUsados');
+        usados = usados ? JSON.parse(usados) : [];
 
-    if (usados.length >= max) {
-        alert('Você já viu todas as cartas! Reiniciando...');
-        sessionStorage.removeItem('indicesUsados');
-        usados = [];
+        if (usados.length >= max) {
+            alert('Você já viu todas as cartas! Reiniciando...');
+            sessionStorage.removeItem('indicesUsados');
+            usados = [];
+        }
+
+        let idx;
+        do {
+            idx = Math.floor(Math.random() * max);
+        } while (usados.includes(idx));
+
+        usados.push(idx);
+        sessionStorage.setItem('indicesUsados', JSON.stringify(usados));
+        return idx;
     }
 
-    let idx;
-    do {
-        idx = Math.floor(Math.random() * max);
-    } while (usados.includes(idx));
+    // Função para preencher o layout com os dados da carta
+    function preencherCarta(carta) {
+        const typeText = document.getElementById('typeText');
+        const characterBanner = document.getElementById('characterBanner');
+        const dicasList = document.getElementById('dicasList');
+        const prefixo = (escapeHtml(carta.tipo) == "Pessoa" || escapeHtml(carta.tipo) == "Coisa") ? "uma" : "um";
+        typeText.innerHTML = `Diga aos jogadores que sou ${prefixo} <strong>${escapeHtml(carta.tipo)}</strong>`;
+        characterBanner.textContent = carta.item;
 
-    usados.push(idx);
-    sessionStorage.setItem('indicesUsados', JSON.stringify(usados));
-    return idx;
-}
+        dicasList.innerHTML = ''; // limpa dicas antigas
+        carta.dicas.forEach(dica => {
+            const li = document.createElement('li');
+            li.textContent = dica;
+            dicasList.appendChild(li);
+        });
+    }
 
-// Função para preencher o layout com os dados da carta
-function preencherCarta(carta) {
-    const typeText = document.getElementById('typeText');
-    const characterBanner = document.getElementById('characterBanner');
-    const dicasList = document.getElementById('dicasList');
-    const prefixo = (escapeHtml(carta.tipo) == "Pessoa" || escapeHtml(carta.tipo) == "Coisa") ? "uma" : "um";
-    typeText.innerHTML = `Diga aos jogadores que sou ${prefixo} <strong>${escapeHtml(carta.tipo)}</strong>`;
-    characterBanner.textContent = carta.item;
+    // Função simples para escapar HTML para evitar injeção
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
 
-    dicasList.innerHTML = ''; // limpa dicas antigas
-    carta.dicas.forEach(dica => {
-        const li = document.createElement('li');
-        li.textContent = dica;
-        dicasList.appendChild(li);
+    // Evento do botão para gerar dica aleatória
+    document.getElementById('btnGerar').addEventListener('click', () => {
+        const idx = getRandomUnusedIndex(cartas.length);
+        const carta = cartas[idx];
+        preencherCarta(carta);
     });
-}
 
-// Função simples para escapar HTML para evitar injeção
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-}
-
-// Evento do botão para gerar dica aleatória
-document.getElementById('btnGerar').addEventListener('click', () => {
-    const idx = getRandomUnusedIndex(cartas.length);
-    const carta = cartas[idx];
-    preencherCarta(carta);
-});
-
-//   // Opcional: carrega a primeira carta ao abrir a página
-//   preencherCarta(cartas[0]);
-
-document.getElementById('qtd').innerText = cartas.length 
+    document.getElementById('qtd').innerText = cartas.length 
 </script>
